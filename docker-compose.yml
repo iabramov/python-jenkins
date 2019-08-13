@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  jenkins:
+    image: 'iabramov/jenkins-docker:0.0.1'
+    build:
+      context: .
+      dockerfile: ./JenkinsDocker.Dockerfile
+    privileged: true
+    ports:
+      - '8080:8080'
+      - '50000:50000'
+    volumes:
+      - ./jenkins_home:/var/jenkins_home
+  jenkinsb:
+    image: 'bitnami/jenkins:2'
+    privileged: true
+    ports:
+      - '80:8080'
+      - '443:8443'
+      - '50000:50000'
+    volumes:
+      - ./jenkins_data:/bitnami
