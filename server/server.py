@@ -18,7 +18,6 @@
 
 # Note: Use storage/database of your choice. The code should have at least one unit test. 
 
-# from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import socketserver
 import json
@@ -29,7 +28,7 @@ from urllib.parse import urlparse, parse_qs
 # from  os.path import split
 import os.path
 from database import DB
-
+import sys
 
     # Table mapping response codes to messages; entries have the
     # form {code: (shortmessage, longmessage)}.
@@ -173,29 +172,36 @@ class Server(BaseHTTPRequestHandler):
     # A. If username's birthday is in N days: ( "message": "Hello, <username>! Your birthday is in N day(s)" } 
     # B. If username's birthday is today: ( "message": "Hello, <username>! Happy birthday!" }
     def do_GET(self):
-        # parse a request path & validate
-        username = self.parse_request_path(self.path)
+        try:
+            # parse a request path & validate
+            username = self.parse_request_path(self.path)
 
-        c = DB.conn.cursor()
+            c = DB.conn.cursor()
 
-        # Read a user info
-        user_cursor = c.execute("""SELECT date_of_birth 
-        FROM user_test 
-        WHERE username = '%s' 
-        """ % username)
+            # Read a user info
+            user_cursor = c.execute("""SELECT date_of_birth 
+            FROM user_test 
+            WHERE username = '%s' 
+            """ % username)
 
-        user = user_cursor.fetchone()
+            user = user_cursor.fetchone()
 
-        if None == user :
-           raise Exception('No username %s found in database.' % username)
-        
-        date_of_birth = datetime.datetime.strptime(user[0], '%Y-%m-%d').date()
-        days = (datetime.date.today() - date_of_birth).days
+            if None == user :
+                raise Exception('No username %s found in database.' % username)
+            
+            today = datetime.date.today()
+            date_of_birth = datetime.datetime.strptime(user[0], '%Y-%m-%d').date()
+            next_birthday = datetime.datetime(today.year+1,date_of_birth.month,date_of_birth.day).date()
+            days = (next_birthday - today).days
 
-        response = self.get_greetings(username, days)
+            response = self.get_greetings(username, days)
 
-        self._send_200()
-        self.wfile.write(response.encode())
+            self._send_200()
+            self.wfile.write(response.encode())
+        except Exception as e:
+            print("Error {0}".format(str(e.args[0])).encode("utf-8"))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
 
     # Description: Saves/updates the given user's name and date of birth in the database. 
     # Request: PUT /hello/<username> ( "dateOfBirth": "YYYY-MM-DD" ) 
@@ -207,34 +213,37 @@ class Server(BaseHTTPRequestHandler):
     def do_PUT(self):
       #   ctype, pdict = cgi.parse_header(self.headers['content-type'])
 
-        # read the message and convert it into a python dictionary
-        length = int(self.headers['content-length'])
-
-        raw_message = self.rfile.read(length)
-        raw_message = raw_message.decode('utf8').replace("(", "{").replace(")", "}")
-        message = json.loads(raw_message.encode())
-
-        # parse a request path & validate
-        username  = self.parse_request_path(self.path)
-
-        date_of_birth = datetime.datetime.strptime(message["dateOfBirth"], '%Y-%m-%d').date()
-
-        if datetime.date.today() <= date_of_birth :
-            raise Exception('%s must be a date before the today date.' % date_of_birth.strftime('%Y-%m-%d'))
-
-        c = DB.conn.cursor()
-
-        # Upsert a user
-        query = """INSERT OR REPLACE INTO user_test (username, date_of_birth) 
-        VALUES ('%s', '%s')
-        """ % (username,date_of_birth.strftime('%Y-%m-%d'))
-
         try:
-            c.execute(query)
-            DB.conn.commit()
-        except sqlite3.Error as e:
-            print("An error occurred:", e.args[0])
+            # read the message and convert it into a python dictionary
+            length = int(self.headers['content-length'])
+
+            raw_message = self.rfile.read(length)
+            raw_message = raw_message.decode('utf8').replace("(", "{").replace(")", "}")
+            message = json.loads(raw_message.encode())
+
+            # parse a request path & validate
+            username  = self.parse_request_path(self.path)
+
+            date_of_birth = datetime.datetime.strptime(message["dateOfBirth"], '%Y-%m-%d').date()
+
+            if datetime.date.today() <= date_of_birth :
+                raise Exception('%s must be a date before the today date.' % date_of_birth.strftime('%Y-%m-%d'))
+
+            c = DB.conn.cursor()
+
+            # Upsert a user
+            query = """INSERT OR REPLACE INTO user_test (username, date_of_birth) 
+            VALUES ('%s', '%s')
+            """ % (username,date_of_birth.strftime('%Y-%m-%d'))
+
+            try:
+                c.execute(query)
+                DB.conn.commit()
+            except sqlite3.Error as e:
+                print("An error occurred:", e.args[0])
+
+            self._send_204()
+        except Exception as e:
+            print("Error {0}".format(str(e.args[0])).encode("utf-8"))
         except:
             print("Unexpected error:", sys.exc_info()[0])
-
-        self._send_204()

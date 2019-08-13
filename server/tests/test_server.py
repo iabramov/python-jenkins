@@ -22,11 +22,7 @@ class TestServerClass:
         httpd.stop(1)
 
     def test_put(self):
-        # resp = req.put("http://127.0.0.1:8080/hello/basil",data = '( "dateOfBirth": "2014-05-01" )')
         resp = req.put("http://127.0.0.1:8080/hello/Basil", data = '( "dateOfBirth": "2014-05-01" )', headers={'Content-type': 'text/html'})
-        # resp = req.put("http://127.0.0.1:8080/hello/basil",'( "dateOfBirth": "2014-05-01" )')
-        # resp = req.put("http://127.0.0.1:8080/hello/basil",data = {'key':'value'})
-        # print(resp.status_code)
         assert 204==resp.status_code
 
 
