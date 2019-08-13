@@ -32,8 +32,10 @@ class TestServerClass:
         resp = req.get("http://127.0.0.1:8080/hello/Basil")
         assert 200==resp.status_code
 
-        date_of_birth = datetime.datetime.strptime("2014-05-01", '%Y-%m-%d').date()
-        days = (datetime.date.today() - date_of_birth).days
+        today = datetime.date.today()
+        date_of_birth = datetime.datetime(2014,5,1).date()
+        next_birthday = datetime.datetime(today.year+1,date_of_birth.month,date_of_birth.day).date()
+        days = (next_birthday - today).days
 
         if days>0 :
             assert '( "message": "Hello, Basil! Your birthday is in %s day(s)" }' % str(days) == resp.text
