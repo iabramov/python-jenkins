@@ -20,20 +20,31 @@ B. If username's birthday is today: ( "message": "Hello, <username>! Happy birth
 
 Note: Use storage/database of your choice. The code should have at least one unit test. 
 
+## How to run and test
+```bash
+pytest -q
+python main.py
+```
 
-# Prerequisites
+Open [http://loalhost:8080/hello/Basil](http://loalhost:8080/hello/Basil)
 
+## How to run and test via docker-compose
+```bash
+docker-compose up test_server
+docker-compose up run_server
+```
+
+## Prerequisites
+```bash
+pip install -r requirements.txt
+```
 ## OSX
 
 ```bash
 brew update
 brew install python
-export PATH=/usr/local/opt/python/libexec/bin:$PATH
 pip install -U pytest
 pytest --version
-
-pip freeze > requirements.txt
-
 pip install -r requirements.txt
-pip3 install requests
+echo 'export PATH=/usr/local/opt/python/libexec/bin:/Users/Ivan/Library/Python/3.7/bin:$PATH' >> ~/.bash_profile
 ```
