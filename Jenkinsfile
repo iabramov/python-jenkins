@@ -6,7 +6,6 @@ node {
     }
 
     stage('Build image') {
-        // app = docker.build("iabramov/python-test")
         app = docker.build("iabramov/python-test", "-f ./server/Dockerfile ./server")
     }
 
@@ -15,8 +14,8 @@ node {
         //     sh 'pytest -q'
         // }
 
-        // it maps host file system to a "nested" docker container because it is not nested at all, use the same socket
-        sh 'docker run  -v /root/jenkins_home/tests:/tests iabramov/python-test pytest --junitxml=/tests/report.xml'
+        // it maps host file system to a "nested" docker container because it is not nested at all, using the same socket
+        sh 'docker run  -v /tests:/tests iabramov/python-test pytest --junitxml=/tests/report.xml'
 
         // app.withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
         //     /* Wait until mysql service is up */
@@ -32,7 +31,7 @@ node {
     }
 
     stage('Publish test result') {
-        junit '/var/jenkins_home/tests/report.xml'
+        junit '/tests/report.xml'
     }
 
     stage('Deploy') {
