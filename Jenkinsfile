@@ -26,7 +26,7 @@ node {
 
         // app = docker.build("iabramov/python-test")
         // app = docker.build("iabramov/python-test", "-f server/Dockerfile .")
-        app = docker.build("iabramov/python-test", "-f Dockerfile ./server")
+        app = docker.build("iabramov/python-test", "-f ./server/Dockerfile ./server")
     }
 
     stage('Test image') {
