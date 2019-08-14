@@ -1,5 +1,5 @@
 # Python + Jenkins 
-
+```
 Design and code a simple "Hello World" application that exposes the following HTTP-based APIs: 
 
 Description: Saves/updates the given user's name and date of birth in the database. 
@@ -19,6 +19,7 @@ A. If username's birthday is in N days: ( "message": "Hello, <username>! Your bi
 B. If username's birthday is today: ( "message": "Hello, <username>! Happy birthday!" } 
 
 Note: Use storage/database of your choice. The code should have at least one unit test. 
+```
 
 ## How to run and test
 ```bash
@@ -26,7 +27,7 @@ pytest -q
 python main.py
 ```
 
-Open [http://loalhost:8080/hello/Basil](http://loalhost:8080/hello/Basil)
+Open [http://localhost:8080/hello/Basil](http://localhost:8080/hello/Basil)
 
 ## How to run and test via docker-compose
 ```bash

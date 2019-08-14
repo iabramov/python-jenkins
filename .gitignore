@@ -128,3 +128,4 @@ dmypy.json
 **/.env
 **/.idea
 **/*.sqlite
+jenkins_home/
