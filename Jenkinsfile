@@ -31,11 +31,15 @@ node {
         }
     }
 
-    post {
-      always {
+    stage('Publish test result') {
         junit '/var/jenkins_home/tests/report.xml'
-        // junit '**/reports/junit/*.xml'
-      }
-   } 
+    }
+
+    stage('Deploy') {
+        sh 'docker container stop python-test && docker container rm python-test'
+        sh 'docker run -d -p 8081:8080 --name python-test iabramov/python-test'
+    }
+
+
 }
 
