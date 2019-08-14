@@ -32,7 +32,7 @@ node {
 
     stage('Publish test result') {
         sh 'ls -la /var/jenkins_home/tests'
-        junit '/var/jenkins_home/tests/report.xml'
+        junit '/var/jenkins_home/tests/*.xml'
     }
 
     stage('Deploy') {
