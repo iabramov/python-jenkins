@@ -15,7 +15,7 @@ node {
         // }
 
         def reportsAbsPath = "${env.WORKSPACE}/tests"
-        sh 'echo ${reportsAbsPath}'
+        sh "echo ${reportsAbsPath}"
         sh "echo ${env.WORKSPACE}"
 
         // it maps host file system to a "nested" docker container because it is not nested at all, using the same socket
