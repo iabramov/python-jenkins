@@ -1,5 +1,8 @@
 node {
     def app
+    def reportsAbsPath = "${env.WORKSPACE}/tests"
+    // host directory should be /root/jenkins_home
+    def hostReportsAbsPath = reportsAbsPath.replace("/root/", "/var/")
 
     stage('Clone repository') {
         checkout scm
@@ -13,11 +16,7 @@ node {
         // app.inside {
         //     sh 'pytest -q'
         // }
-
-        def reportsAbsPath = "${env.WORKSPACE}/tests"
-
-        // host directory should be /root/jenkins_home
-        def hostReportsAbsPath = reportsAbsPath.replace("/root/", "/var/")
+        
         // it maps host file system to a "nested" docker container because it is not nested at all, using the same socket
         sh "docker run  -v ${hostReportsAbsPath}:/tests iabramov/python-test pytest -q --junitxml=/tests/report.xml"
     }
