@@ -1,34 +1,40 @@
 
 import pytest
-import sys, os
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../')
+import sys, os, time, datetime, logging
+import requests as req
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/../')
 
+import settings
 from server import Server
 from async_server import AsyncHTTPServer
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import requests as req
-import time
-import datetime
-
 
 class TestServerClass:
-    """Server unit tests"""
+    """Server unit tests
+
+       Logging should be configured in pytest.ini, or you should run pytest -q -c pytest_logs.ini
+    """
+
     @pytest.fixture(scope='session',autouse=True)
     def http_server(self):
-        httpd = AsyncHTTPServer()
+        """Fixture, starts HTTP server once per session"""
+        logging.info("starting httpd")
+        httpd = AsyncHTTPServer(settings.http_host, settings.http_port)
         yield httpd  # provide the fixture value
-        print("teardown httpd")
+        logging.info("teardown httpd")
         httpd.stop(1)
 
     def test_put(self):
-        resp = req.put("http://127.0.0.1:8080/hello/Basil", data = '( "dateOfBirth": "2014-05-01" )', headers={'Content-type': 'text/html'})
-        assert 204==resp.status_code
+        """Tests HTTP put request method"""
 
+        resp = req.put("http://127.0.0.1:8080/hello/Basil", data = '{ "dateOfBirth": "2014-05-01" }', headers={'Content-type': 'application/json'})
+        assert 204==resp.status_code
 
     # A. If username's birthday is in N days: ( "message": "Hello, <username>! Your birthday is in N day(s)" } 
     # B. If username's birthday is today: ( "message": "Hello, <username>! Happy birthday!" }
     def test_get(self):
+        """Tests HTTP get request method"""
+
         resp = req.get("http://127.0.0.1:8080/hello/Basil")
         assert 200==resp.status_code
 
@@ -38,7 +44,7 @@ class TestServerClass:
         days = (next_birthday - today).days
 
         if days>0 :
-            assert '( "message": "Hello, Basil! Your birthday is in %s day(s)" }' % str(days) == resp.text
+            assert '{ "message": "Hello, Basil! Your birthday is in %s day(s)" }' % str(days) == resp.text
         else :
-            assert '( "message": "Hello, Basil! Happy birthday!" }' == resp.text
+            assert '{ "message": "Hello, Basil! Happy birthday!" }' == resp.text
 

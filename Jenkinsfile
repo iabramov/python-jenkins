@@ -30,12 +30,10 @@ node {
     }
 
     stage('Deploy') {
-        // sh 'docker ps -q --filter ancestor="iabramov/python-test:${versionTag}" | xargs -r docker stop'
         sh 'docker container stop python-test || true'
         sh 'docker container rm python-test || true'
         sh "docker run -d -p 8081:8080 --name python-test iabramov/python-test:${versionTag}"
     }
-
 
 }
 
