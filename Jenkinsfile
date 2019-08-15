@@ -35,7 +35,7 @@ node {
     }
 
     stage('Deploy') {
-        sh 'docker container stop python-test ; docker container rm python-test || true'
+        sh 'docker container stop python-test || docker container rm python-test || true'
         sh "docker run -d -p 8081:8080 --name python-test iabramov/python-test:${env.BUILD_NUMBER}"
     }
 
