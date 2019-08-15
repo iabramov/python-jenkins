@@ -1,53 +1,39 @@
-pipeline {
-    agent any
-    stages {
+node {
+    def app
 
-        stage('Clone repository') {
-            checkout scm
-        }
-
-        stage('Build image') {
-            app = docker.build("iabramov/python-test", "-f ./server/Dockerfile ./server")
-        }
-
-        stage('Test image') {
-            // app.inside {
-            //     sh 'pytest -q'
-            // }
-
-            def reportsAbsPath = "${env.WORKSPACE}/tests"
-
-            // host path /root/jenkins_home
-            def hostReportsAbsPath = reportsAbsPath.replace("/root/", "/var/")
-            // it maps host file system to a "nested" docker container because it is not nested at all, using the same socket
-            sh "docker run  -v ${hostReportsAbsPath}:/tests iabramov/python-test pytest -q --junitxml=/tests/report.xml"
-            sh "ls -la ./tests"
-            // sh "mv -f /tests/report.xml ${reportsAbsPath}"
-            // sh "ls -la ${reportsAbsPath}"
-            // app.withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
-            //     /* Wait until mysql service is up */
-            //     sh 'pytest --junitxml=/var/jenkins_home/tests/report.xml'
-            // }
-        }
-
-        // stage('Push image') {
-        //     docker.withRegistry('https://registry.hub.docker.com', 'e6416be2-1865-42df-bae1-4172dd398822') {
-        //         app.push("${env.BUILD_NUMBER}")
-        //         app.push("latest")
-        //     }
-        // }
-
-        stage('Publish test result') {
-            junit 'tests/*.xml'
-        }
+    stage('Clone repository') {
+        checkout scm
     }
 
-    // post {
-    //     always {
-    //         // archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
-    //         junit 'tests/*.xml'
+    stage('Build image') {
+        app = docker.build("iabramov/python-test", "-f ./server/Dockerfile ./server")
+    }
+
+    stage('Test image') {
+        // app.inside {
+        //     sh 'pytest -q'
+        // }
+
+        def reportsAbsPath = "${env.WORKSPACE}/tests"
+
+        // host directory should be /root/jenkins_home
+        def hostReportsAbsPath = reportsAbsPath.replace("/root/", "/var/")
+        // it maps host file system to a "nested" docker container because it is not nested at all, using the same socket
+        sh "docker run  -v ${hostReportsAbsPath}:/tests iabramov/python-test pytest -q --junitxml=/tests/report.xml"
+        sh "ls -la ./tests"
+    }
+
+    // stage('Push image') {
+    //     docker.withRegistry('https://registry.hub.docker.com', 'e6416be2-1865-42df-bae1-4172dd398822') {
+    //         app.push("${env.BUILD_NUMBER}")
+    //         app.push("latest")
     //     }
     // }
+
+    stage('Publish test result') {
+        sh "touch tests/*.xml"
+        junit 'tests/*.xml'
+    }
 
     // stage('Deploy') {
     //     sh 'docker container stop python-test && docker container rm python-test'
