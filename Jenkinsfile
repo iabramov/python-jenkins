@@ -37,17 +37,17 @@ pipeline {
         //     }
         // }
 
-        // stage('Publish test result') {
-        //     junit 'tests/*.xml'
-        // }
-    }
-
-    post {
-        always {
-            // archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
+        stage('Publish test result') {
             junit 'tests/*.xml'
         }
     }
+
+    // post {
+    //     always {
+    //         // archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
+    //         junit 'tests/*.xml'
+    //     }
+    // }
 
     // stage('Deploy') {
     //     sh 'docker container stop python-test && docker container rm python-test'
