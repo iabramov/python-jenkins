@@ -16,7 +16,7 @@ node {
 
         def reportsAbsPath = "${env.WORKSPACE}/tests"
 
-        sh "echo $(pwd())"
+        // sh "echo $(pwd())"
         sh "ls -la ${env.WORKSPACE}"
         sh "echo ${reportsAbsPath}"
 
@@ -37,7 +37,7 @@ node {
     // }
 
     stage('Publish test result') {
-        sh 'ls -la ./tests'
+        // sh 'ls -la ./tests'
         junit './tests/*.xml'
     }
 
