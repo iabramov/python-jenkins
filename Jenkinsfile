@@ -15,8 +15,9 @@ node {
         // }
 
         def reportsAbsPath = "${env.WORKSPACE}/tests"
+        sh "echo $(pwd())"
+        sh "ls -la "${env.WORKSPACE}"
         sh "echo ${reportsAbsPath}"
-
 
         // it maps host file system to a "nested" docker container because it is not nested at all, using the same socket
         sh "docker run  -v /root/jenkins_home/tests:${reportsAbsPath} iabramov/python-test pytest --junitxml=${reportsAbsPath}/report.xml"
