@@ -23,7 +23,6 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import socketserver, json, cgi, sqlite3, datetime
 from urllib.parse import urlparse, parse_qs
 import re
-from requests import HTTPError
 
 from database import DB
 import http_responses
@@ -39,6 +38,11 @@ class Server(BaseHTTPRequestHandler):
         logging.info("Initializing a HTTP server")
         self.regex_username = re.compile("^/hello/([a-zA-Z]+)$")
         BaseHTTPRequestHandler.__init__(self, request, client_address, server)
+    
+    # Disable logging DNS lookups
+    # Reverse DNS lookup may seriously slow down the server!
+    def address_string(self):
+        return str(self.client_address[0])
 
     def parse_request_path(self, path):
       """Parses a request path & validates it"""
