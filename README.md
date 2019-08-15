@@ -26,8 +26,8 @@ Note: Use storage/database of your choice. The code should have at least one uni
 
 ## Tools, repos and deloyments 
 
-- Jenkins jobs [http://68.183.67.246:8080/job/python-jenkins/](http://68.183.67.246:8080/job/python-jenkins/)
-- Deployed example [http://68.183.67.246:8081](http://68.183.67.246:8081)
+- Deployed example [http://68.183.67.246:8081/hello/Basil](http://68.183.67.246:8081/hello/Basil)
+- Jenkins [http://68.183.67.246:8080](http://68.183.67.246:8080)
 - DockerHub repo [https://hub.docker.com/r/iabramov/python-test](https://hub.docker.com/r/iabramov/python-test)
 
 ## Project structure 
