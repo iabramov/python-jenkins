@@ -42,8 +42,7 @@ node {
     // }
 
     stage('Publish test result') {
-        sh 'ls -la ./tests'
-        junit './tests/*.xml'
+        junit 'tests/*.xml'
     }
 
     // stage('Deploy') {
