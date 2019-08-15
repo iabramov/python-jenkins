@@ -11,3 +11,7 @@ http_host = ''
 http_port = 8080
 
 pathlib.Path(project_path+'/logs').mkdir(parents=True, exist_ok=True)
+
+def get_base_url () :
+    host = '127.0.0.1' if http_host == '' else http_host
+    return "http://%s:%s" % (host, http_port)

@@ -81,7 +81,7 @@ class Server(BaseHTTPRequestHandler):
         self.end_headers()
 
     def _send_response(self, code, message=''):
-        """Returns 501 error"""
+        """Sends headers with code and message"""
         self._send_response_code_and_headers(code, {})
         _, msg = http_responses.get_http_response_info(code)
         
@@ -89,11 +89,11 @@ class Server(BaseHTTPRequestHandler):
         self.wfile.write(final_message.encode())
 
     def _send_501_response(self, message=''):
-        """Returns 501 error"""
-        self._send_response(510, message)
+        """Sends 501 error"""
+        self._send_response(501, message)
 
     def _send_http_exception_response(self, ex):
-        """Returns 501 error"""
+        """Sends headers with code and message from HTTPException"""
         self._send_response(ex.code, ex.message)
 
     def do_HEAD(self):
@@ -181,7 +181,14 @@ class Server(BaseHTTPRequestHandler):
             # parse a request path & validate
             username  = self.parse_request_path(self.path)
 
-            date_of_birth = datetime.datetime.strptime(message["dateOfBirth"], '%Y-%m-%d').date()
+            if 'dateOfBirth' not in message.keys():
+               raise HTTPException(400, 'dateOfBirth not found.')
+
+            try:
+                datetime_of_birth = datetime.datetime.strptime(message["dateOfBirth"], '%Y-%m-%d')
+                date_of_birth = datetime_of_birth.date()
+            except ValueError as e:
+                raise HTTPException(400, '%s must be a valid YYYY-MM_DD date.' % message["dateOfBirth"])
 
             if datetime.date.today() <= date_of_birth :
                 raise HTTPException(400, '%s must be a date before the today date.' % date_of_birth.strftime('%Y-%m-%d'))
@@ -204,6 +211,9 @@ class Server(BaseHTTPRequestHandler):
 
             self._send_response_code_and_headers(204)
 
+        except json.JSONDecodeError as e:
+            logging.error(e.msg)
+            self._send_response(400,e.msg)
         except HTTPException as e:
             logging.error(e.code_description_and_message)
             self._send_http_exception_response(e)
