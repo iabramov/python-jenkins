@@ -49,6 +49,24 @@ class TestServerClass:
             assert '{ "message": "Hello, Basil! Happy birthday!" }' == resp.text
 
 
+    def test_put_another_user(self):
+        """Tests HTTP put request method"""
+
+        resp = req.put("http://127.0.0.1:8080/hello/Pafnuty", data = '{ "dateOfBirth": "1964-03-17" }', headers={'Content-type': 'application/json'})
+        assert 204==resp.status_code
+
+    def test_put_user_future_date(self):
+        """Tests HTTP put request method"""
+
+        resp = req.put("http://127.0.0.1:8080/hello/Pafnuty", data = '{ "dateOfBirth": "2100-01-01" }', headers={'Content-type': 'application/json'})
+        assert 400==resp.status_code
+
+    def test_put_user_with_notexisting_date(self):
+        """Tests HTTP put request method"""
+
+        resp = req.put("http://127.0.0.1:8080/hello/Pafnuty", data = '{ "dateOfBirth": "2001-03-29" }', headers={'Content-type': 'application/json'})
+        assert 400==resp.status_code
+
     def test_put_wrong_name(self):
         """Tests sending a malformed name"""
 
