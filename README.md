@@ -30,6 +30,16 @@ Note: Use storage/database of your choice. The code should have at least one uni
 - Deployed example [http://68.183.67.246:8081](http://68.183.67.246:8081)
 - DockerHub repo [https://hub.docker.com/r/iabramov/python-test](https://hub.docker.com/r/iabramov/python-test)
 
+## Project structure 
+
+- root directory contain docker-compose, Jenkins Dockerfile, Jenkins Groovy pipeline file
+- server: contains HTTP server sources
+- server/tests: contains pytest's unit tests
+- server/logs: directory with logs
+- server/users.sqlite: SQLite database, created dynamically
+- server/Dockerfile: Dockerfile of server
+- server/tests.Dockerfile: Dockerfile for pytest (see docker-compose.yaml for further information)
+
 ## How to run and test locally
 
 - Run server ```python main.py``` 
@@ -50,8 +60,10 @@ docker-compose up run_server
 ```bash
 pip install -r requirements.txt
 ```
-## OSX
 
+## Setting up
+
+### OSX
 ```bash
 brew update
 brew install python
