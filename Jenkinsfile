@@ -20,25 +20,24 @@ node {
         def hostReportsAbsPath = reportsAbsPath.replace("/root/", "/var/")
         // it maps host file system to a "nested" docker container because it is not nested at all, using the same socket
         sh "docker run  -v ${hostReportsAbsPath}:/tests iabramov/python-test pytest -q --junitxml=/tests/report.xml"
-        sh "ls -la ./tests"
     }
 
-    // stage('Push image') {
-    //     docker.withRegistry('https://registry.hub.docker.com', 'e6416be2-1865-42df-bae1-4172dd398822') {
-    //         app.push("${env.BUILD_NUMBER}")
-    //         app.push("latest")
-    //     }
-    // }
+    stage('Push image') {
+        docker.withRegistry('https://registry.hub.docker.com', 'e6416be2-1865-42df-bae1-4172dd398822') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
+        }
+    }
 
     stage('Publish test result') {
         sh "touch tests/*.xml"
         junit 'tests/*.xml'
     }
 
-    // stage('Deploy') {
-    //     sh 'docker container stop python-test && docker container rm python-test'
-    //     sh 'docker run -d -p 8081:8080 --name python-test iabramov/python-test'
-    // }
+    stage('Deploy') {
+        sh 'docker container stop python-test && docker container rm python-test'
+        sh "docker run -d -p 8081:8080 --name python-test iabramov/python-test:${env.BUILD_NUMBER}"
+    }
 
 
 }
