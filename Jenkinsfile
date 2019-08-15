@@ -18,10 +18,12 @@ node {
 
         // sh "echo $(pwd())"
         sh "ls -la ${env.WORKSPACE}"
-        sh "echo ${reportsAbsPath}"
+        sh "mkdir -p ${reportsAbsPath}"
 
         // it maps host file system to a "nested" docker container because it is not nested at all, using the same socket
-        sh "docker run  -v /root/jenkins_home/tests:${reportsAbsPath} iabramov/python-test pytest --junitxml=${reportsAbsPath}/report.xml"
+        // sh "docker run  -v /root/jenkins_home/tests:${reportsAbsPath} iabramov/python-test pytest --junitxml=${reportsAbsPath}/report.xml"
+        sh "docker run  -v /root/jenkins_home/tests:/tests iabramov/python-test pytest --junitxml=/tests/report.xml"
+        sh "mv -f /tests/report.xml ${reportsAbsPath}"
         sh "ls -la ${reportsAbsPath}"
         // app.withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
         //     /* Wait until mysql service is up */
@@ -37,7 +39,7 @@ node {
     // }
 
     stage('Publish test result') {
-        // sh 'ls -la ./tests'
+        sh 'ls -la ./tests'
         junit './tests/*.xml'
     }
 
