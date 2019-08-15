@@ -55,6 +55,12 @@ class TestServerClass:
         resp = req.put("http://127.0.0.1:8080/hello/Pafnuty", data = '{ "dateOfBirth": "1964-03-17" }', headers={'Content-type': 'application/json'})
         assert 204==resp.status_code
 
+    def test_get_another_user(self):
+        """Tests HTTP get request method"""
+
+        resp = req.get(settings.get_base_url()+"/hello/Pafnuty")
+        assert 200==resp.status_code
+
     def test_put_user_future_date(self):
         """Tests HTTP put request method"""
 
@@ -62,10 +68,16 @@ class TestServerClass:
         assert 400==resp.status_code
 
     def test_put_user_with_notexisting_date(self):
-        """Tests HTTP put request method"""
+        """Tests HTTP put request method 2001 is not a leap year"""
 
-        resp = req.put("http://127.0.0.1:8080/hello/Pafnuty", data = '{ "dateOfBirth": "2001-03-29" }', headers={'Content-type': 'application/json'})
+        resp = req.put("http://127.0.0.1:8080/hello/Pafnuty", data = '{ "dateOfBirth": "2001-02-29" }', headers={'Content-type': 'application/json'})
         assert 400==resp.status_code
+
+    def test_put_user_with_leap_date(self):
+        """Tests HTTP put request method 2000 is a leap year"""
+
+        resp = req.put("http://127.0.0.1:8080/hello/Pafnuty", data = '{ "dateOfBirth": "2000-02-29" }', headers={'Content-type': 'application/json'})
+        assert 204==resp.status_code
 
     def test_put_wrong_name(self):
         """Tests sending a malformed name"""
