@@ -15,6 +15,7 @@ node {
         // }
 
         def reportsAbsPath = "${env.WORKSPACE}/tests"
+        
         sh "echo $(pwd())"
         sh "ls -la "${env.WORKSPACE}"
         sh "echo ${reportsAbsPath}"
